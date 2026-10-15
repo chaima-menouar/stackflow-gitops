@@ -28,16 +28,15 @@ class GitOpsSafetyTest(unittest.TestCase):
         self.assertEqual(path.read_bytes(), original)
 
     def test_production_promotion_requires_real_staging_digest(self):
-        result = self.run_script("promote.py")
-        # Before the first GHCR release there is intentionally no image to promote.
+        # Never modify the real production overlay from a safety test.
         from yaml import safe_load
         with (ROOT / "apps/demo/overlays/staging/kustomization.yaml").open(encoding="utf-8") as stream:
             image_digest = safe_load(stream)["images"][0]["digest"]
-        if image_digest == "sha256:" + "0" * 64:
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn("bootstrap digest is not deployable", result.stderr)
-        else:
-            self.assertEqual(result.returncode, 0, result.stderr)
+        if image_digest != "sha256:" + "0" * 64:
+            self.skipTest("only applicable before the initial staging release")
+        result = self.run_script("promote.py")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("bootstrap digest is not deployable", result.stderr)
 
     def test_zero_digest_cannot_be_promoted_to_staging(self):
         result = self.run_script("set-digest.py", "--environment", "staging",
