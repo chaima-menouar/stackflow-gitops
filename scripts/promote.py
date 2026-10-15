@@ -4,15 +4,19 @@
 This is a proposal helper, NOT staging-health verification or deployment.
 The caller must independently verify healthy staging and obtain admin PR approval.
 """
-from validate import ZERO, validate_common, validate_environment
-from set_digest import set_digest
+from pathlib import Path
+from runpy import run_path
+
+from validate import validate_common, validate_environment
+
+# The command-line tool is intentionally spelled set-digest.py, which is not
+# importable with Python module syntax. Load its safe editing function by path.
+set_digest = run_path(str(Path(__file__).with_name("set-digest.py")))["set_digest"]
 
 
 def main():
     validate_common()
     digest = validate_environment("staging", deployable=True)
-    if digest == ZERO:
-        raise ValueError("cannot promote an unpublished image")
     target = set_digest("production", digest)
     validate_environment("production", deployable=True)
     print("Prepared production overlay: " + str(target))
