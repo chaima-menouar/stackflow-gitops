@@ -1,0 +1,49 @@
+name: Propose staging release
+on:
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: 'Immutable GHCR image digest (sha256: + 64 lowercase hex chars)'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  propose:
+    runs-on: ubuntu-24.04
+    # Write permissions are scoped to the job, not the whole repository workflow.
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install validator dependencies
+        run: python3 -m pip install --user -r scripts/requirements.txt
+      - name: Update staging digest
+        env:
+          IMAGE_DIGEST: ${{ inputs.digest }}
+        run: |
+          python3 scripts/set-digest.py --environment staging --digest "$IMAGE_DIGEST"
+          python3 scripts/validate.py --environment staging --deployable
+          python3 scripts/validate.py
+          bash scripts/render.sh
+      - name: Create reviewed pull request (does not deploy)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE_DIGEST: ${{ inputs.digest }}
+        run: |
+          if git diff --quiet -- apps/demo/overlays/staging/kustomization.yaml; then
+            echo "Staging already points to this image; no PR required"
+            exit 0
+          fi
+          branch="automation/staging-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add apps/demo/overlays/staging/kustomization.yaml
+          git commit -m "chore(staging): propose immutable image release"
+          git push --set-upstream origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "chore(staging): propose image release" \
+            --body "Proposed image: ghcr.io/chaima-menouar/stackflow-demo-app@$IMAGE_DIGEST. Validate CI and review before merging. This PR does not deploy on its own; staging Argo CD reconciles only an approved merge."
