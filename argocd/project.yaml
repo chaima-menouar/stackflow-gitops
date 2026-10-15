@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: stackflow
+  namespace: argocd
+spec:
+  description: StackFlow demo app; trusted repository and demo namespaces only
+  sourceRepos:
+    - https://github.com/chaima-menouar/stackflow-gitops.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: demo-staging
+    - server: https://kubernetes.default.svc
+      namespace: demo-production
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

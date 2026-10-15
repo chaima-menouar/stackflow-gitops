@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stackflow-demo-staging
+  namespace: argocd
+spec:
+  project: stackflow
+  source:
+    repoURL: https://github.com/chaima-menouar/stackflow-gitops.git
+    targetRevision: main
+    path: apps/demo/overlays/staging
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo-staging
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
