@@ -15,4 +15,4 @@ This repository is the **desired-state source of truth** for StackFlow's Kuberne
 
 **Current status:** repository scaffold. The pinned zero digest is an intentionally invalid placeholder until `stackflow-demo-app` CI publishes a real image. **Do not apply the Argo CD Applications yet.** A running Kubernetes cluster, CI image, RBAC and repository approval policy are not configured here.
 
-See [the bootstrap and deployment guide](docs/BOOTSTRAP.md) for the precise follow-up steps.
+See [the bootstrap and deployment guide](docs/BOOTSTRAP.md) and [three-repository integration guide](docs/INTEGRATION_GUIDE.md) for the precise follow-up steps.
