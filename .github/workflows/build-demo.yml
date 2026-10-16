@@ -41,7 +41,7 @@ jobs:
           .venv/bin/pip install -r requirements-dev.txt
       - name: Lint
         working-directory: services/demo-app
-        run: .venv/bin/ruff check app tests
+        run: .venv/bin/ruff check --select E4,E7,E9,F app tests
       - name: Unit tests
         working-directory: services/demo-app
         run: .venv/bin/pytest -q
