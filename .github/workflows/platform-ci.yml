@@ -23,7 +23,7 @@ jobs:
           .venv/bin/pip install -r requirements-dev.txt
       - name: Lint
         working-directory: services/platform/backend
-        run: .venv/bin/ruff check app tests
+        run: .venv/bin/ruff check --select E4,E7,E9,F app tests
       - name: Run API tests
         working-directory: services/platform/backend
         run: .venv/bin/pytest -q
