@@ -25,7 +25,7 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Verify manual target is checked-out main
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -55,7 +55,7 @@ jobs:
     outputs:
       digest: ${{ steps.publish.outputs.digest }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build Docker image
         run: docker build -t stackflow-demo:ci services/demo-app
       - name: Trivy security gate
@@ -88,7 +88,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Validate and prepare staging pull request
         env:
           IMAGE_DIGEST: ${{ needs.publish.outputs.digest }}
