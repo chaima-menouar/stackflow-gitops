@@ -111,4 +111,8 @@ jobs:
           git add apps/demo/overlays/staging/kustomization.yaml
           git commit -m "chore(staging): propose tested image digest"
           git push -u origin "$branch"
-          gh pr create --head "$branch" --base main --title "chore(staging): propose tested image"             --body "Automated proposal from the tested GHCR image **$IMAGE_DIGEST**. Review and merge before Argo CD reconciles. GitHub-token-created PRs may not trigger a separate PR workflow; this job ran all manifest checks before proposing."
+          if ! gh pr create --head "$branch" --base main --title "chore(staging): propose tested image" --body "Automated proposal for tested image $IMAGE_DIGEST; independent review is required."; then
+            echo "::warning::GHCR image published, but Actions could not create a staging pull request."
+            echo "⚠️ Open the staging PR manually, or enable Actions PR creation in repository Settings > Actions > General." >> "$GITHUB_STEP_SUMMARY"
+            echo "Branch: $branch | image: $IMAGE_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+          fi
