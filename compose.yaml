@@ -1,0 +1,71 @@
+name: stackflow
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: stackflow
+      POSTGRES_USER: stackflow
+      POSTGRES_PASSWORD: local-only-not-for-production
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stackflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  api:
+    build: services/platform/backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://stackflow:local-only-not-for-production@db:5432/stackflow
+      DEV_ADMIN_API_TOKEN: ${DEV_ADMIN_API_TOKEN:?Set DEV_ADMIN_API_TOKEN in .env}
+      ALLOWED_GITHUB_REPO: chaima-menouar/stackflow-gitops
+      GITHUB_API_TOKEN: ${GITHUB_API_TOKEN:-}
+    ports:
+      - "127.0.0.1:8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./services/platform/frontend:/app
+      - node_modules:/app/node_modules
+    environment:
+      VITE_PROXY_TARGET: http://api:8001
+    command: ["sh", "-c", "npm install --no-audit --no-fund && npm run dev -- --host 0.0.0.0"]
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      - api
+  demo:
+    build: services/demo-app
+    ports:
+      - "127.0.0.1:8000:8000"
+  prometheus:
+    image: prom/prometheus:v3.4.1
+    profiles: ["monitoring"]
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      - demo
+      - api
+  grafana:
+    image: grafana/grafana:11.6.1
+    profiles: ["monitoring"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env}
+    volumes:
+      - ./monitoring/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - prometheus
+volumes:
+  pgdata:
+  node_modules:
+  grafana_data:

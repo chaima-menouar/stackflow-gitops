@@ -1,0 +1,112 @@
+name: Demo App - Test Scan Build and Propose
+on:
+  push:
+    branches: [main]
+    paths:
+      - "services/demo-app/**"
+      - ".github/workflows/build-demo.yml"
+  pull_request:
+    paths:
+      - "services/demo-app/**"
+      - ".github/workflows/build-demo.yml"
+  workflow_dispatch:
+    inputs:
+      requested_sha:
+        description: "Approved main commit SHA (40 hex chars)"
+        required: false
+        type: string
+      request_id:
+        description: "StackFlow request correlation identifier"
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Verify manual target is checked-out main
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          REQUESTED_SHA: ${{ inputs.requested_sha }}
+        run: |
+          if [ -n "$REQUESTED_SHA" ]; then
+            test "$REQUESTED_SHA" = "$GITHUB_SHA" || { echo "Requested SHA differs from dispatched main"; exit 1; }
+          fi
+      - name: Install dependencies
+        working-directory: services/demo-app
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements-dev.txt
+      - name: Lint
+        working-directory: services/demo-app
+        run: .venv/bin/ruff check app tests
+      - name: Unit tests
+        working-directory: services/demo-app
+        run: .venv/bin/pytest -q
+  publish:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.publish.outputs.digest }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Build Docker image
+        run: docker build -t stackflow-demo:ci services/demo-app
+      - name: Trivy security gate
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: stackflow-demo:ci
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: os,library
+      - name: Login to GHCR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Publish immutable artifact
+        id: publish
+        run: |
+          set -euo pipefail
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/stackflow-demo-app"
+          docker tag stackflow-demo:ci "$IMAGE:sha-$GITHUB_SHA"
+          docker push "$IMAGE:sha-$GITHUB_SHA" | tee /tmp/push.log
+          DIGEST=$(sed -nE 's/.*digest: (sha256:[a-f0-9]{64}).*/\1/p' /tmp/push.log | tail -1)
+          test -n "$DIGEST"
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "Published $IMAGE@$DIGEST" >> "$GITHUB_STEP_SUMMARY"
+  propose-staging:
+    needs: publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Validate and prepare staging pull request
+        env:
+          IMAGE_DIGEST: ${{ needs.publish.outputs.digest }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user -r scripts/requirements.txt
+          python3 scripts/set-digest.py --environment staging --digest "$IMAGE_DIGEST"
+          python3 scripts/validate.py
+          bash scripts/render.sh
+          if git diff --quiet -- apps/demo/overlays/staging/kustomization.yaml; then
+            echo "Already at requested digest"; exit 0
+          fi
+          branch="automation/demo-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add apps/demo/overlays/staging/kustomization.yaml
+          git commit -m "chore(staging): propose tested image digest"
+          git push -u origin "$branch"
+          gh pr create --head "$branch" --base main --title "chore(staging): propose tested image"             --body "Automated proposal from the tested GHCR image **$IMAGE_DIGEST**. Review and merge before Argo CD reconciles. GitHub-token-created PRs may not trigger a separate PR workflow; this job ran all manifest checks before proposing."

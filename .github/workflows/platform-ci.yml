@@ -1,0 +1,29 @@
+name: Platform API - Tests
+on:
+  pull_request:
+    paths:
+      - "services/platform/backend/**"
+      - ".github/workflows/platform-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "services/platform/backend/**"
+      - ".github/workflows/platform-ci.yml"
+permissions:
+  contents: read
+jobs:
+  api-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install dependencies
+        working-directory: services/platform/backend
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements-dev.txt
+      - name: Lint
+        working-directory: services/platform/backend
+        run: .venv/bin/ruff check app tests
+      - name: Run API tests
+        working-directory: services/platform/backend
+        run: .venv/bin/pytest -q

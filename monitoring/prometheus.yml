@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: "stackflow-platform"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:8001"]
+  - job_name: "stackflow-demo"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["demo:8000"]
