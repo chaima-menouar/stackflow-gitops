@@ -10,4 +10,4 @@ replicas:
 images:
   - name: ghcr.io/chaima-menouar/stackflow-demo-app
     newName: ghcr.io/chaima-menouar/stackflow-demo-app
-    digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    digest: sha256:ac084154ab73da36d74d3c45a335a23d92e907150c42af4068c35372c320b8d1
