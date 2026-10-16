@@ -44,7 +44,7 @@ jobs:
         run: .venv/bin/ruff check --select E4,E7,E9,F app tests
       - name: Unit tests
         working-directory: services/demo-app
-        run: .venv/bin/pytest -q
+        run: .venv/bin/python -m pytest -q
   publish:
     needs: test
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
