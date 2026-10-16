@@ -96,6 +96,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m pip install --user -r scripts/requirements.txt
+          git fetch origin main
+          git checkout -B main origin/main
           python3 scripts/set-digest.py --environment staging --digest "$IMAGE_DIGEST"
           python3 scripts/validate.py
           bash scripts/render.sh
