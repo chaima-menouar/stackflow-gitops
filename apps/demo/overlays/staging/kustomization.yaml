@@ -2,12 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: demo-staging
 resources:
-  - ../../base
-  - namespace.yaml
+- ../../base
+- namespace.yaml
 replicas:
-  - name: demo-api
-    count: 1
+- name: demo-api
+  count: 1
 images:
-  - name: ghcr.io/chaima-menouar/stackflow-demo-app
-    newName: ghcr.io/chaima-menouar/stackflow-demo-app
-    digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+- name: ghcr.io/chaima-menouar/stackflow-demo-app
+  newName: ghcr.io/chaima-menouar/stackflow-demo-app
+  digest: sha256:3166f1bec3d50f03ab920485110fcdda121696c42b05d377529729883bed5e0e
