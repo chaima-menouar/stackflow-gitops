@@ -9,6 +9,17 @@
 
 Latest CI run status is in the repository's Actions tab. **Do not infer health, deployment, or publication without inspecting actual check results.**
 
+## Verified CI evidence — 16 October 2026
+
+- [GitOps validation #38925544977](https://github.com/chaima-menouar/stackflow-gitops/actions/runs/38925544977): **passed** on the initial staging PR.
+- [Platform API tests #38925193270](https://github.com/chaima-menouar/stackflow-gitops/actions/runs/38925193270): **passed**.
+- [Frontend build #38925351347](https://github.com/chaima-menouar/stackflow-gitops/actions/runs/38925351347): **passed**.
+- [Demo build/publish #38925188161](https://github.com/chaima-menouar/stackflow-gitops/actions/runs/38925188161): unit tests, scan and GHCR publish **passed**, but overall workflow was **red** due to GitHub Actions being disallowed from opening PRs. Confirmed successful published digest: `sha256:ac084154ab73da36d74d3c45a335a23d92e907150c42af4068c35372c320b8d1`.
+- [Staging release PR #5](https://github.com/chaima-menouar/stackflow-gitops/pull/5): **open, not merged or deployed**. Requires human review and a pullable container / initialized Kubernetes cluster.
+- [Workflow policy workaround](https://github.com/chaima-menouar/stackflow-gitops/commit/3fcdc8b3c63fec64e1ebf62b4b7f7f5f73aecdd8): the script now emits an explicit warning if auto-PR creation is blocked instead of treating image publishing as a failure. Configure GitHub Actions PR permission to enable fully automatic PR proposals.
+
+These are **as-observed snapshots**, not guarantees about all future runs. Always inspect current Actions status before demonstrating.
+
 ## Evidence still needed before claiming a completed end-to-end platform
 
 1. GitHub image package is published and pullable, staging has a **real** digest (not 64 zeros).
