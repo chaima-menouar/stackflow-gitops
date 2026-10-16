@@ -1,0 +1,19 @@
+groups:
+  - name: stackflow.local
+    rules:
+      - alert: StackFlowDemoUnavailable
+        expr: up{job="stackflow-demo"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Demo API cannot be scraped"
+          description: "Prometheus cannot scrape the demo API for 2 minutes; investigate logs and service health."
+      - alert: StackFlowPlatformUnavailable
+        expr: up{job="stackflow-platform"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Platform API cannot be scraped"
+          description: "Prometheus cannot scrape the StackFlow API for 2 minutes; investigate API/database health."
