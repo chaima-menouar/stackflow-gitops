@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {createRoot} from "react-dom/client";
 import "./style.css";
-import GitOpsTopology3D from "./GitOpsTopology3D";
+import DeploymentRobotHero from "./DeploymentRobotHero";
 
 type Project = {id: string; repository: string};
 type Deployment = {id: string; project_id: string; commit_sha: string; environment: string; status: string; created_at: string};
@@ -161,7 +161,7 @@ function App() {
           <div className="hero-actions"><a className="button button-primary" href="#projects">Open workspace <Icon name="arrow" size={17}/></a><a className="button button-ghost" href="#pipeline">Explore pipeline <Icon name="chevron" size={16}/></a></div>
           <div className="hero-footnote"><span className="footnote-dot"/><span>Designed for GitOps-first delivery</span><span className="footnote-divider"/><span>Human-reviewed production</span></div>
         </div>
-        <GitOpsTopology3D/>
+        <DeploymentRobotHero/>
       </section>
 
       <div className="section-title-row"><div><div className="section-kicker">LIVE WORKSPACE</div><h2>At a glance <span className="subtle-heading">/ Your environment</span></h2></div><button className="text-button" type="button" onClick={refresh} disabled={busy}><Icon name="refresh" size={15}/> Refresh data</button></div>
