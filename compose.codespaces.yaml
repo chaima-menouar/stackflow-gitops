@@ -1,0 +1,31 @@
+# Codespaces troubleshooting ONLY: bypass the broken Docker bridge.
+# Opt in with: docker compose -f compose.yaml -f compose.codespaces.yaml up -d --build
+# Not for shared servers or production. Keep Codespaces forwarded ports PRIVATE.
+services:
+  db:
+    network_mode: host
+    # On host networking, database listens only on loopback (not public interfaces).
+    command: ["postgres", "-c", "listen_addresses=127.0.0.1"]
+  api:
+    network_mode: host
+    ports: !reset []
+    environment:
+      DATABASE_URL: postgresql+psycopg://stackflow:local-only-not-for-production@127.0.0.1:5432/stackflow
+  web:
+    network_mode: host
+    ports: !reset []
+    environment:
+      VITE_PROXY_TARGET: http://127.0.0.1:8001
+  demo:
+    network_mode: host
+    ports: !reset []
+  prometheus:
+    network_mode: host
+    ports: !reset []
+    volumes:
+      - ./monitoring/prometheus.codespaces.yml:/etc/prometheus/prometheus.yml:ro
+  grafana:
+    network_mode: host
+    ports: !reset []
+    volumes:
+      - ./monitoring/grafana/datasources.codespaces.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
