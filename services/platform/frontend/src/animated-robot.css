@@ -1,0 +1,229 @@
+/* StackFlow: real articulated robot rendered in native WebGL2.
+   Orbital cards and particles are 3D meshes, not a fixed GIF or PNG overlay. */
+.hero-panel:has(.webgl-hero) {
+  min-height: 502px;
+  align-items: center;
+  padding: 48px 4.5%;
+}
+.hero-panel:has(.webgl-hero) .hero-copy {
+  width: 51%;
+  max-width: 610px;
+  min-width: 0;
+}
+.hero-panel:has(.webgl-hero) .hero-copy h1 {
+  font-size: clamp(31px, 3.45vw, 55px);
+  white-space: normal;
+  letter-spacing: -2.2px;
+}
+.hero-panel:has(.webgl-hero) .hero-copy p {max-width: 455px}
+.webgl-hero {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 54%;
+  height: 100%;
+  z-index: 2;
+  isolation: isolate;
+  overflow: hidden;
+  pointer-events: auto;
+}
+.webgl-hero-aura {
+  position: absolute;
+  z-index: -1;
+  top: 7%;
+  left: 7%;
+  width: 87%;
+  height: 74%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,rgba(129,47,217,.32) 0%,rgba(143,56,202,.10) 44%,transparent 71%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+.webgl-hero-caption {
+  position: absolute;
+  left: 11%;
+  top: 20px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ab81c7;
+  font-size: 8px;
+  letter-spacing: 1.1px;
+  white-space: nowrap;
+  font-weight: 800;
+  pointer-events: none;
+}
+.webgl-hero-caption-dot, .webgl-feature-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: #da70f9;
+  box-shadow: 0 0 11px #e16fff;
+}
+.webgl-hero-caption-line {height: 1px; width: 15px; background: #8251a6}
+.webgl-robot-canvas {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 36px;
+  width: 100%;
+  height: calc(100% - 124px);
+  display: block;
+  touch-action: pan-y;
+  cursor: default;
+}
+.webgl-robot-fallback {
+  display: block;
+  width: 92%;
+  height: calc(100% - 113px);
+  position: absolute;
+  left: 4%;
+  top: 22px;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 24px rgba(182,50,234,.18));
+  animation: stackflow-fallback-float 6s ease-in-out infinite;
+}
+@keyframes stackflow-fallback-float {
+  0%,100% {transform: translateY(3px)}
+  50% {transform: translateY(-11px)}
+}
+.webgl-hero-bottom {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.webgl-feature-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border: 1px solid rgba(181,96,221,.27);
+  padding: 7px 10px;
+  border-radius: 10px;
+  color: #f5e7fe;
+  background: linear-gradient(106deg,rgba(41,21,61,.91),rgba(20,13,35,.88));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 9px 23px rgba(0,0,0,.25);
+}
+.webgl-feature-info>div {flex: 1; min-width: 0}
+.webgl-feature-info strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.webgl-feature-info small {
+  display: block;
+  font-size: 9px;
+  line-height: 1.5;
+  color: #b19bbb;
+  margin-top: 2px;
+}
+.webgl-motion-toggle {
+  border-radius: 7px;
+  border: 1px solid rgba(180,129,227,.33);
+  background: rgba(127,57,172,.17);
+  color: #d9b7ef;
+  font: 800 10px "DM Sans", sans-serif;
+  min-width: 42px;
+  padding: 7px 8px;
+}
+.webgl-motion-toggle:hover {background: rgba(144,70,197,.31)}
+.webgl-feature-choices {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 1px 1px 2px;
+}
+.webgl-feature-choices::-webkit-scrollbar {display: none}
+.webgl-feature-button {
+  flex: 1 0 auto;
+  border: 1px solid rgba(155,109,193,.2);
+  border-radius: 6px;
+  background: rgba(15,13,27,.80);
+  color: #9785a6;
+  padding: 6px 7px;
+  white-space: nowrap;
+  font: 700 8px "DM Sans",sans-serif;
+  letter-spacing: .18px;
+}
+.webgl-feature-button.is-selected, .webgl-feature-button:hover {
+  border-color: rgba(207,115,253,.7);
+  background: rgba(103,50,140,.5);
+  color: #f5ddff;
+}
+.webgl-hero-qualifier {
+  color: #89729b;
+  font-size: 8px;
+  text-align: center;
+  line-height: 1.3;
+}
+@media(max-width: 1320px) and (min-width: 761px) {
+  .hero-panel:has(.webgl-hero) {min-height: 486px;padding: 40px 4%}
+  .hero-panel:has(.webgl-hero) .hero-copy {width: 50%}
+  .hero-panel:has(.webgl-hero) .hero-copy h1 {font-size: clamp(31px,3.25vw,48px)}
+  .webgl-hero {width: 53%}
+  .webgl-hero-bottom {left: 4%;right: 4%}
+  .webgl-feature-button {padding: 5px 6px;font-size: 7px}
+}
+@media(max-width: 1030px) and (min-width: 761px) {
+  .hero-panel:has(.webgl-hero) {min-height: 464px}
+  .hero-panel:has(.webgl-hero) .hero-copy {width: 53%}
+  .webgl-hero {width: 49%;opacity: 1;right: 0;transform: none}
+  .webgl-feature-choices {overflow-x: auto}
+  .webgl-feature-button {flex: 0 0 auto}
+  .webgl-feature-info small {font-size: 8px}
+}
+@media(max-width: 760px) {
+  .hero-panel:has(.webgl-hero) {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 34px 23px 11px;
+    overflow: hidden;
+  }
+  .hero-panel:has(.webgl-hero) .hero-copy {width: 100%;max-width: none}
+  .hero-panel:has(.webgl-hero) .hero-copy h1 {font-size: clamp(31px,5.6vw,43px);letter-spacing: -1.65px}
+  .hero-panel:has(.webgl-hero) .hero-copy p {max-width: 480px}
+  .webgl-hero {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    height: 390px;
+    flex: 0 0 390px;
+    transform: none;
+    opacity: 1;
+    margin-top: 6px;
+  }
+  .webgl-robot-canvas {top: 27px;height: calc(100% - 112px)}
+  .webgl-hero-caption {top: 9px;left: 7%}
+  .webgl-hero-bottom {bottom: 4px;left: 2%;right: 2%}
+  .webgl-robot-fallback {height: calc(100% - 90px)}
+}
+@media(max-width: 475px) {
+  .hero-panel:has(.webgl-hero) {padding: 31px 17px 12px}
+  .webgl-hero {height: 322px;flex-basis: 322px}
+  .webgl-hero-caption {font-size: 7px;left: 3%;letter-spacing: .7px}
+  .webgl-hero-bottom {left: 0;right: 0;gap: 5px}
+  .webgl-feature-info {min-height: 38px}
+  .webgl-feature-info small {font-size: 8px}
+  .webgl-feature-button {flex:0 0 auto;font-size:7px}
+  .webgl-hero-qualifier {font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+  .webgl-robot-fallback {animation: none}
+  .webgl-feature-choices {scroll-behavior:auto}
+}
