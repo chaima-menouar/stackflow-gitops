@@ -116,7 +116,7 @@ this.width=Math.max(1,r.width);this.height=Math.max(1,r.height);
 canvas.width=Math.max(1,Math.round(this.width*d));canvas.height=Math.max(1,Math.round(this.height*d));
 gl.viewport(0,0,canvas.width,canvas.height);this.vp=projection(canvas.width/canvas.height);}
 select(id:FeatureId){this.selected=id;}
-pointer(x:number,y:number){this.tx=x;this.ty=y;}
+pointer(x:number,y:number){if(this.reduced)return;this.tx=x;this.ty=y;}
 pause(v:boolean){this.paused=v;this.last=performance.now();}
 motionReduced(v:boolean){this.reduced=v;}
 tap(x:number,y:number){const nearest=this.projected.map(p=>({id:p.id,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>a.d-b.d)[0];if(nearest?.d<95)this.onSelect(nearest.id);}
@@ -131,7 +131,9 @@ gl.bindVertexArray(geo.vao);gl.drawElements(gl.TRIANGLES,geo.n,gl.UNSIGNED_SHORT
 private ball(m:M,p:V,d:V,c:string,glow=0){this.draw("sphere",m,p,d,c,glow);}
 private ring(m:M,p:V,d:V,c:string,a=1,rot:M=id()){this.draw("torus",m,p,d,c,.5,a,rot);}
 private arm(body:M,side:number,t:number){
-const a=side*(.22+.12*Math.sin(t*.98+side*1.3));
+const activePosition=this.orbitPos(FEATURES.findIndex(f=>f.id===this.selected),t);
+const reach=Math.max(0,side*activePosition[0])/2.6;
+const a=side*(.18+.14*Math.sin(t*.98+side*1.3)+reach*.30);
 const parent=mat(body,move(side*.78,-.18,.08),rz(a));
 this.ball(parent,[0,0,0],[.30,.30,.27],"#c7b6e9",.13);
 this.ball(parent,[side*.36,.09,.07],[.45,.22,.22],"#e0d3f2",.18);
@@ -158,7 +160,9 @@ this.ring(body,[0,-.47,.81],[.31,.31,.18],"#be65ff");
 this.ball(body,[0,-.45,.83],[.17,.17,.07],"#ac47de",.72);
 this.ball(body,[0,.30,0],[.33,.21,.32],"#1d1529",.22);
 this.arm(body,-1,t);this.arm(body,1,t);
-const head=mat(body,move(0,.47,0),ry(.13*Math.sin(t*.55)),rz(.029*Math.sin(t*.72)),move(0,-.47,0));
+const active=this.orbitPos(FEATURES.findIndex(f=>f.id===this.selected),t);
+const look=Math.max(-.25,Math.min(.25,active[0]*.075));
+const head=mat(body,move(0,.47,0),ry(look+.08*Math.sin(t*.55)),rz(.029*Math.sin(t*.72)),move(0,-.47,0));
 this.ball(head,[0,1.22,.04],[1.03,.75,.67],"#eee5ff",.15);
 this.ball(head,[0,1.19,.59],[.91,.58,.22],"#231637",.12);
 this.ball(head,[0,1.19,.76],[.83,.49,.145],"#0d0b1e",.13);
@@ -196,6 +200,15 @@ this.draw("quad",root,[0,0,.005],[1.54*k,.82*k,1],f.color,0,.99,id(),this.textur
 }
 for(let i=0;i<25;i++){const a=t*(.30+i%3*.025)+i*TWO/25,p:[number,number,number]=[Math.cos(a)*2.56,Math.sin(a)*1.54+.08,Math.sin(a)*1.25-.06];
 this.ball(base,p,[.03,.03,.03],i%3===0?"#f48ddc":"#c786ff",1.1);}
+// A stream of light travels from the robot hand to the selected feature.
+const target=this.orbitPos(FEATURES.findIndex(f=>f.id===this.selected),t);
+const handX=target[0]>=0?1.72:-1.72;
+for(let j=0;j<7;j++){
+  const f=((j/7+t*.33)%1);
+  const p:[number,number,number]=[handX+(target[0]-handX)*f,.45+(target[1]-.45)*f,.66+(target[2]-.66)*f];
+  const radius=.024+.015*Math.sin(Math.PI*f);
+  this.ball(base,p,[radius,radius,radius],"#f2a6ff",1.12);
+}
 this.projected=points;
 }
 private frame=(now:number)=>{
