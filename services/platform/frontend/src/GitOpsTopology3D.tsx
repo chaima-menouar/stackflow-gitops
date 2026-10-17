@@ -245,11 +245,19 @@ function canRenderWebGL(): boolean {
   }
 }
 
+class ThreeSceneBoundary extends React.Component<
+  {children: React.ReactNode; fallback: React.ReactNode},
+  {failed: boolean}
+> {
+  state = {failed: false};
+  static getDerivedStateFromError() {return {failed: true};}
+  render() {return this.state.failed ? this.props.fallback : this.props.children;}
+}
+
 export default function GitOpsTopology3D() {
   const [selected, setSelected] = useState<StageId>("kubernetes");
   const [webGLReady, setWebGLReady] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [renderError, setRenderError] = useState(false);
 
   useEffect(() => {
     setWebGLReady(canRenderWebGL());
@@ -266,8 +274,9 @@ export default function GitOpsTopology3D() {
     <div className="topology-art-aura" aria-hidden="true"/>
     <div className="topology-suptitle"><span className="topology-live-dot"/> ARCHITECTURE PREVIEW <span className="topology-dash"/> 3D GITOPS</div>
     <div className="topology-canvas" aria-label="Interactive 3D view of the GitOps delivery architecture">
-      {webGLReady && !renderError ?
-        <Suspense fallback={<StaticTopology selected={selected} onSelect={setSelected}/>}>
+      {webGLReady ?
+        <ThreeSceneBoundary fallback={<StaticTopology selected={selected} onSelect={setSelected}/>}>
+          <Suspense fallback={<StaticTopology selected={selected} onSelect={setSelected}/>}>
           <Canvas camera={{position: [0, 0, 9.4], fov: 39, near: 0.1, far: 60}}
             dpr={[1, 1.65]} frameloop={reducedMotion ? "demand" : "always"}
             gl={{alpha: true, antialias: true, powerPreference: "high-performance"}}
@@ -275,7 +284,8 @@ export default function GitOpsTopology3D() {
             onPointerMissed={() => setSelected("kubernetes")}>
             <TopologyScene selected={selected} onSelect={setSelected} reducedMotion={reducedMotion}/>
           </Canvas>
-        </Suspense>
+          </Suspense>
+        </ThreeSceneBoundary>
         : <StaticTopology selected={selected} onSelect={setSelected}/>}
     </div>
     <div className="topology-stage-info" aria-live="polite">
