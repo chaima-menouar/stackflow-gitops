@@ -91,48 +91,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .hero-footnote .footnote-dot {width: 5px; height: 5px; margin: 0}
 .footnote-divider {height: 11px; width: 1px; background: #554266}
 
-/* A real CSS perspective scene: six independently positioned cube faces and 3D orbital rings. */
-.hero-art {position: absolute; z-index: 2; top: 0; right: 0; height: 100%; width: 49%; perspective: 850px; display: grid; place-items: center; touch-action: pan-y}
-.art-grid {position: absolute; width: 480px; height: 350px; border-radius: 50%; background: radial-gradient(ellipse, rgba(191, 62, 244, .09), transparent 65%); filter: blur(9px)}
-.orbital-stage {--pointer-x: 0deg; --pointer-y: 0deg; position: relative; width: min(27vw, 322px); height: min(27vw, 322px); min-width: 236px; min-height: 236px; transform-style: preserve-3d; transform: rotateX(var(--pointer-y)) rotateY(var(--pointer-x)); transition: transform .28s ease-out; animation: float 7s ease-in-out infinite}
-.orbital-glow {position: absolute; left: 50%; top: 52%; width: 65%; height: 65%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(202, 58, 250, .39), rgba(142, 63, 243, .13) 48%, transparent 75%); filter: blur(27px)}
-.orbit {position: absolute; left: 50%; top: 50%; width: 83%; height: 83%; border: 1.5px solid rgba(206, 104, 255, .63); border-radius: 50%; transform-style: preserve-3d; box-shadow: 0 0 21px rgba(195, 80, 244, .22), inset 0 0 19px rgba(127, 48, 223, .11); pointer-events: none}
-.orbit:before, .orbit:after {content: ""; position: absolute; width: 9px; height: 9px; border-radius: 50%; top: 13%; left: 14%; background: #dd81ff; box-shadow: 0 0 14px #d555ff, 0 0 24px #f34ada}
-.orbit:after {top: 78%; left: 83%; width: 4px; height: 4px; background: #ff6fda}
-.orbit-one {border-top-color: #f151d8; border-left-color: rgba(121, 75, 255, .36); animation: orbitOne 22s linear infinite}
-.orbit-two {width: 99%; height: 99%; border-color: rgba(105, 79, 229, .25); border-right-color: rgba(247, 76, 224, .70); border-top-color: rgba(231, 108, 255, .28); animation: orbitTwo 17s linear infinite}
-.orbit-two:before {background: #af5dfd}
-.orbit-three {width: 69%; height: 69%; border-color: rgba(161, 102, 249, .22); border-bottom-color: rgba(247, 87, 209, .64); animation: orbitThree 26s linear infinite}
-.orbit-three:before {width: 4px; height: 4px}
-.cube-rotator {position: absolute; width: 112px; height: 112px; left: 50%; top: 50%; transform: translate(-50%, -50%); transform-style: preserve-3d}
-.cube {position: relative; width: 112px; height: 112px; transform-style: preserve-3d; animation: cubeSpin 18s linear infinite}
-.cube-face {position: absolute; inset: 0; display: grid; place-items: center; border: 1px solid rgba(242, 159, 255, .66); background: linear-gradient(145deg, rgba(184, 83, 249, .33), rgba(56, 24, 98, .76) 55%, rgba(245, 62, 187, .25)); box-shadow: inset 0 0 25px rgba(178, 83, 243, .19), 0 0 8px rgba(158, 75, 255, .11); backdrop-filter: blur(1px); backface-visibility: visible}
-.cube-face:before {content: ""; position: absolute; inset: 10px; border: 1px solid rgba(237, 170, 255, .10)}
-.cube-face-inner {font-size: 37px; font-weight: 300; color: rgba(244, 193, 255, .76); text-shadow: 0 0 28px rgba(220, 80, 255, .75)}
-.cube-face.front {transform: translateZ(56px)}
-.cube-face.back {transform: rotateY(180deg) translateZ(56px)}
-.cube-face.right {transform: rotateY(90deg) translateZ(56px)}
-.cube-face.left {transform: rotateY(-90deg) translateZ(56px)}
-.cube-face.top {transform: rotateX(90deg) translateZ(56px)}
-.cube-face.bottom {transform: rotateX(-90deg) translateZ(56px)}
-.cube-face.right,.cube-face.top {background: linear-gradient(135deg, rgba(208, 73, 221, .45), rgba(59, 30, 109, .67))}
-.cube-face.left,.cube-face.bottom {background: rgba(91, 38, 169, .34)}
-.particle {position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #dd86ff; box-shadow: 0 0 12px #d35cfe}
-.particle-one {top: 13%; left: 25%}
-.particle-two {bottom: 14%; right: 17%; background: #ed4dbb}
-.particle-three {top: 34%; right: 3%; width: 2px; height: 2px}
-.art-chip {position: absolute; z-index: 5; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(197, 149, 254, .20); background: rgba(24, 17, 36, .78); backdrop-filter: blur(13px); padding: 10px 14px; border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,.19); font-size: 11px; font-weight: 800; color: #e9d8ff}
-.art-chip small {display: block; color: #9b87ae; font-size: 9px; font-weight: 600; margin-top: 4px}
-.art-chip-top {right: 8%; top: 15%; transform: rotate(3deg)}
-.art-chip-bottom {left: 0; bottom: 14%; transform: rotate(-4deg)}
-.chip-icon {width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: rgba(152, 93, 251, .21); color: #cea0ff}
-.chip-icon.magenta {background: rgba(245, 66, 196, .17); color: #ff89d2}
-@keyframes cubeSpin {0% {transform: rotateX(-23deg) rotateY(0deg) rotateZ(12deg)} 100% {transform: rotateX(-23deg) rotateY(360deg) rotateZ(12deg)}}
-@keyframes orbitOne {from {transform: translate(-50%,-50%) rotateX(68deg) rotateY(16deg) rotateZ(0deg)} to {transform: translate(-50%,-50%) rotateX(68deg) rotateY(16deg) rotateZ(360deg)}}
-@keyframes orbitTwo {from {transform: translate(-50%,-50%) rotateY(70deg) rotateX(28deg) rotateZ(0deg)} to {transform: translate(-50%,-50%) rotateY(70deg) rotateX(28deg) rotateZ(-360deg)}}
-@keyframes orbitThree {from {transform: translate(-50%,-50%) rotateX(22deg) rotateY(-57deg) rotateZ(0deg)} to {transform: translate(-50%,-50%) rotateX(22deg) rotateY(-57deg) rotateZ(360deg)}}
-@keyframes float {0%,100% {translate: 0 0} 50% {translate: 0 -12px}}
-
 .section-title-row {display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-bottom: 19px}
 .section-kicker {color: #a477e3; font-size: 10px; font-weight: 800; letter-spacing: 1.55px; margin-bottom: 10px}
 .section-title-row h2, .panel-heading h2, .operations-panel h2 {font-family: "Space Grotesk", sans-serif; color: #f6f3ff; font-weight: 700; font-size: 22px; line-height: 1.2; letter-spacing: -.6px; margin: 0}
@@ -249,14 +207,14 @@ footer {display: flex; align-items: center; justify-content: space-between; gap:
 
 @media (min-width: 1500px) {
   .hero-panel {min-height: 460px}
-  .hero-art {width: 46%}
+  
 }
 @media (max-width: 1250px) {
   .app-shell {grid-template-columns: 218px minmax(0, 1fr)}
   .sidebar {padding-left: 11px; padding-right: 11px}
   .hero-panel {padding: 40px 36px; min-height: 396px}
   .hero-copy h1 {font-size: clamp(33px, 3.6vw, 47px); letter-spacing: -2px}
-  .hero-art {width: 46%}
+  
   .art-chip-top {right: 2%}
   .art-chip-bottom {left: -2%}
   .metrics {gap: 10px}
@@ -266,7 +224,6 @@ footer {display: flex; align-items: center; justify-content: space-between; gap:
 }
 @media (max-width: 1030px) {
   .hero-copy {width: 68%}
-  .hero-art {opacity: .77; right: -8%; pointer-events: none}
   .hero-copy h1 {font-size: clamp(31px, 4vw, 40px)}
   .metrics {grid-template-columns: repeat(2, minmax(0, 1fr))}
   .metric {min-height: 153px}
@@ -290,7 +247,6 @@ footer {display: flex; align-items: center; justify-content: space-between; gap:
   .hero-copy {width: 100%}
   .hero-copy h1 {font-size: clamp(29px, 5.7vw, 43px); white-space: normal; letter-spacing: -1.8px}
   .hero-copy p {max-width: 430px}
-  .hero-art {opacity: .27; width: 70%; right: -25%; transform: scale(.90)}
   .art-chip {display: none}
   .hero-copy .hero-label, .hero-actions, .hero-footnote {position: relative; z-index: 5}
   .pipeline-card {padding: 21px 19px 18px}
