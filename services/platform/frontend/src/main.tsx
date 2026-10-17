@@ -1,6 +1,7 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {createRoot} from "react-dom/client";
 import "./style.css";
+import GitOpsTopology3D from "./GitOpsTopology3D";
 
 type Project = {id: string; repository: string};
 type Deployment = {id: string; project_id: string; commit_sha: string; environment: string; status: string; created_at: string};
@@ -32,39 +33,6 @@ function Icon({name, size = 18}: {name: IconName; size?: number}) {
 }
 
 const workflowUrl = "https://github.com/chaima-menouar/stackflow-gitops/actions";
-
-function OrbitalArtwork() {
-  const sceneRef = useRef<HTMLDivElement>(null);
-  function onMove(event: React.PointerEvent<HTMLDivElement>) {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-    sceneRef.current?.style.setProperty("--pointer-x", (x * 14).toFixed(2) + "deg");
-    sceneRef.current?.style.setProperty("--pointer-y", (-y * 14).toFixed(2) + "deg");
-  }
-  function onLeave() {
-    sceneRef.current?.style.setProperty("--pointer-x", "0deg");
-    sceneRef.current?.style.setProperty("--pointer-y", "0deg");
-  }
-  return <div className="hero-art" aria-hidden="true" onPointerMove={onMove} onPointerLeave={onLeave}>
-    <div className="art-grid" />
-    <div className="orbital-stage" ref={sceneRef}>
-      <div className="orbital-glow" />
-      <div className="orbit orbit-one" />
-      <div className="orbit orbit-two" />
-      <div className="orbit orbit-three" />
-      <div className="cube-rotator">
-        <div className="cube">
-          {["front","back","right","left","top","bottom"].map(face=><span key={face} className={"cube-face " + face}><span className="cube-face-inner">✦</span></span>)}
-        </div>
-      </div>
-      <span className="particle particle-one" /><span className="particle particle-two" /><span className="particle particle-three" />
-    </div>
-    <div className="art-chip art-chip-top"><span className="chip-icon"><Icon name="branch" size={14}/></span><span>GitOps workflow<small>Version controlled</small></span></div>
-    <div className="art-chip art-chip-bottom"><span className="chip-icon magenta"><Icon name="shield" size={14}/></span><span>Release gates<small>Human approved</small></span></div>
-  </div>;
-}
 
 function WaveBackdrop() {
   return <svg className="wave-backdrop" viewBox="0 0 1150 450" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -193,7 +161,7 @@ function App() {
           <div className="hero-actions"><a className="button button-primary" href="#projects">Open workspace <Icon name="arrow" size={17}/></a><a className="button button-ghost" href="#pipeline">Explore pipeline <Icon name="chevron" size={16}/></a></div>
           <div className="hero-footnote"><span className="footnote-dot"/><span>Designed for GitOps-first delivery</span><span className="footnote-divider"/><span>Human-reviewed production</span></div>
         </div>
-        <OrbitalArtwork/>
+        <GitOpsTopology3D/>
       </section>
 
       <div className="section-title-row"><div><div className="section-kicker">LIVE WORKSPACE</div><h2>At a glance <span className="subtle-heading">/ Your environment</span></h2></div><button className="text-button" type="button" onClick={refresh} disabled={busy}><Icon name="refresh" size={15}/> Refresh data</button></div>
